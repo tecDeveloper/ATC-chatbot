@@ -20,7 +20,7 @@ def load_embeddings_and_index():
     # Load embeddings
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/multi-qa-mpnet-base-dot-v1")
     # Load FAISS index
-    faiss_index = FAISS.load_local("../vectorDB/faiss_index", embeddings, allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("./vectorDB/faiss_index", embeddings, allow_dangerous_deserialization=True)
     return embeddings, faiss_index
 
 # Load embeddings and FAISS index
