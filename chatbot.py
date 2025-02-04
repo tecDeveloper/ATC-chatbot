@@ -28,6 +28,23 @@ embeddings, faiss_index = load_embeddings_and_index()
 
 # Initialize Streamlit app
 st.title("Your Assistant")
+# Apply custom CSS to hide the bottom profile image and Streamlit icon
+st.markdown(
+    """
+    <style>
+        /* Hide Streamlit branding */
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+
+        /* Cover the bottom right profile image and Streamlit icon */
+        [data-testid="stDecoration"] {
+            background-color: white !important;
+            height: 50px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Initialize LangChain memory
 if "memory" not in st.session_state:
