@@ -1,6 +1,12 @@
 import os
 import sys
 
+# Adding logging
+import logging
+logging.basicConfig(filename='app.logs', level=logging.DEBUG, 
+                    format='%(asctime)s %(levelname)s: %(message)s')
+
+
 # Set the working directory paths
 current_directory = os.getcwd()
 parent_directory = os.path.dirname(current_directory)
@@ -20,7 +26,7 @@ def load_embeddings_and_index():
     # Load embeddings
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/multi-qa-mpnet-base-dot-v1")
     # Load FAISS index
-    faiss_index = FAISS.load_local("../vectorDB/faiss_index", embeddings, allow_dangerous_deserialization=True)
+    faiss_index = FAISS.load_local("./vectorDB/faiss_index_improved", embeddings, allow_dangerous_deserialization=True)
     return embeddings, faiss_index
 
 # Load embeddings and FAISS index
@@ -28,6 +34,24 @@ embeddings, faiss_index = load_embeddings_and_index()
 
 # Initialize Streamlit app
 st.title("Your Assistant")
+# Apply custom CSS to hide the bottom profile image and Streamlit icon
+st.markdown(
+    """
+    <style>
+        /* Hide Streamlit branding */
+        header {visibility: hidden;}
+        footer {visibility: hidden;}
+
+        /* Cover the bottom right profile image and Streamlit icon */
+        [data-testid="stDecoration"] {
+            background-color: white !important;
+            height: 50px;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 # Initialize LangChain memory
 if "memory" not in st.session_state:
@@ -62,9 +86,12 @@ if user_query := st.chat_input("Ask"):
     with st.chat_message("user"):
         st.markdown(user_query)
 
+    logging.info(f"USer query was: {user_query}")
     # Perform similarity search with FAISS
     results = faiss_index.similarity_search(user_query, k=5)
+    print("Result of similarity is: ",results)
     context = "\n".join([result.page_content for result in results])
+    logging.info(f"Similarity search is: {context}")
 
     # Prepare input for the model
     system_message = f"Information you need to answer is:\n{context}\n"
@@ -75,13 +102,13 @@ if user_query := st.chat_input("Ask"):
 
     # Generate a response using the model
     with st.chat_message("assistant"):
-        response_container = st.empty()  # Placeholder for streaming response
+        response_container = st.empty() 
         full_response = ""
 
         for chunk in model.stream(chat_prompt.format(messages=st.session_state.memory.chat_memory.messages)):
             full_response += chunk.content
-            response_container.markdown(full_response)  # Update streamed content
-
+            response_container.markdown(full_response)  
+    logging.info(f"Model's response is: {full_response}")
     # Add assistant response to LangChain memory
     st.session_state.memory.chat_memory.add_ai_message(full_response)
 

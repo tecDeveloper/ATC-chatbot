@@ -1,5 +1,5 @@
 run:
-	venv\Scripts\activate && cd chatbot && streamlit run chatbot.py
+	venv\Scripts\activate &&  streamlit run chatbot.py
 
 
 updatedb:

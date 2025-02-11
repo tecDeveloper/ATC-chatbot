@@ -3,51 +3,59 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 
 # Extract QA Pairs from a Word file with "QUESTION:" and "ANSWER:" format.
-def extract_qa_from_docx(file_path):
+def extract_qa_pairs(file_path):
     doc = Document(file_path)
     qa_pairs = []
-    current_question = None
-    current_answer = []
+    current_q = None
+    current_a = []
+    collect_answer = False
 
     for para in doc.paragraphs:
         text = para.text.strip()
-        if text.startswith("QUESTION:"):
-            if current_question and current_answer:
-                qa_pairs.append(f"QUESTION: {current_question} ANSWER: {' '.join(current_answer)}")
-            current_question = text[len("QUESTION:"):].strip()
-            current_answer = []
-        elif text.startswith("ANSWER:"):
-            if current_question:
-                current_answer.append(text[len("ANSWER:"):].strip())
-            else:
-                current_answer = [text[len("ANSWER:"):].strip()]
-        else:
-            if current_answer:
-                current_answer.append(text)
-
-    if current_question and current_answer:
-        qa_pairs.append(f"QUESTION: {current_question} ANSWER: {' '.join(current_answer)}")
         
+        if text.startswith("QUESTION:"):
+            if current_q:  
+                qa_pairs.append({
+                    "question": current_q,
+                    "answer": " ".join(current_a).strip()
+                })
+            current_q = text[len("QUESTION:"):].strip()
+            current_a = []
+            collect_answer = False
+        elif text.startswith("ANSWER:"):
+            current_a.append(text[len("ANSWER:"):].strip())
+            collect_answer = True
+        elif collect_answer and text:
+            current_a.append(text)
+
+    # Add the last pair
+    if current_q and current_a:
+        qa_pairs.append({
+            "question": current_q,
+            "answer": " ".join(current_a).strip()
+        })
+    
     return qa_pairs
 
-# Extract QA pairs from the Word document.
-file_path = "../data/Chatbot Preprocessed Questions.docx"  
-all_sections = extract_qa_from_docx(file_path)
+# Initialize embeddings with better parameters
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/multi-qa-mpnet-base-dot-v1",
+    model_kwargs={'device': 'cpu'},  # or 'cuda' if available
+    encode_kwargs={'normalize_embeddings': True}
+)
 
-if not all_sections:
-    print("No QA pairs found in the document!")
-else:
-    print(f"Extracted {len(all_sections)} QA pairs.")
+# Extract structured QA pairs
+qa_pairs = extract_qa_pairs("../data/Chatbot Preprocessed Questions.docx")
 
-# Initialize QA-Optimized Embeddings.
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/multi-qa-mpnet-base-dot-v1")
+# Combine questions and answers into a single text for embedding
+combined_texts = [f"Question: {pair['question']} Answer: {pair['answer']}" for pair in qa_pairs]
 
-# Create FAISS Index for the combined QA pairs.
+# Create FAISS index with combined texts
 faiss_index = FAISS.from_texts(
-    texts=all_sections,  # Pass the extracted QA pairs
+    texts=combined_texts,
     embedding=embeddings
 )
 
-# Save FAISS Index locally.
-faiss_index.save_local("faiss_index")
+# Save index
+faiss_index.save_local("faiss_index_improved")
 print("FAISS index saved successfully!")
