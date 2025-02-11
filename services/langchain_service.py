@@ -37,7 +37,7 @@ Guidelines:
 - Remember stick to the data don't make your own link they are in the data being provided to you.
 - must include the link that is given with the answer ( the link which starts with https://pub  and ends with .pdf), include the complete URL as a clickable hyperlink. Format the link using Markdown syntax. For example: [Read more here](https://example.com/document.pdf).
 - Provide only 1 link which is the most relevant link
-- Response should have minimum 20 or more words but shouldn't be more than 100 words if it is then give some details and give the link we talked about thats it.
+- Response should have minimum 20 words but shouldn't be more than 90 words  in total if it is then give some details and give the link we talked about thats it.
 - Don't give link when just introducing yoursef. see you have to give link when generating some answer for user.
 """),
      MessagesPlaceholder(variable_name="messages"),
