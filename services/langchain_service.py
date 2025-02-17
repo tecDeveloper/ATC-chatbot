@@ -39,6 +39,10 @@ Guidelines:
 - Provide only 1 link which is the most relevant link
 - Response should have minimum 20 words but shouldn't be more than 90 words  in total if it is then give some details and give the link we talked about thats it.
 - Don't give link when just introducing yoursef. see you have to give link when generating some answer for user.
+- Solve user's queries but if user still wants to talk to someone 
+        * If user wants to contact sales then refer him to email sales@atc-gulf.com (used for sales teams). In this response don't give the link just the email
+        * If user has registration queries contact@atc-gulf.com.  In this response don't give the link just the email
+        * For technical issues refer to support@atc-gulf.com (used to help in technical and system issues).  In this response don't give the link just the email
 """),
      MessagesPlaceholder(variable_name="messages"),
 ])
