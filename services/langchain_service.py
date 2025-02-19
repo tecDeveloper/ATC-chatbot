@@ -1,12 +1,20 @@
+# For using Groq LLMs
 from langchain_groq import ChatGroq
-import getpass
+
 import os
+
+# For prompt Template
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
+# For role like system, AI assistant etc in Langchain
 from langchain.schema import HumanMessage
 
-from dotenv import load_dotenv
-# For memory
+# For memory in langchain
 from langgraph.graph import START, MessagesState, StateGraph
+
+# For loading .env
+from dotenv import load_dotenv
+
 
 
 load_dotenv()
@@ -37,8 +45,8 @@ Guidelines:
 - Remember stick to the data don't make your own link they are in the data being provided to you.
 - must include the link that is given with the answer ( the link which starts with https://pub  and ends with .pdf), include the complete URL as a clickable hyperlink. Format the link using Markdown syntax. For example: [Read more here](https://example.com/document.pdf).
 - Provide only 1 link which is the most relevant link
-- Response should have minimum 20 words but shouldn't be more than 90 words  in total if it is then give some details and give the link we talked about thats it.
-- Don't give link when just introducing yoursef. see you have to give link when generating some answer for user.
+- Response should have minimum 40 words but shouldn't be more than 90 words  in total if it is then give some details and give the link we talked about thats it.
+- Don't give link when just introducing yoursef, or some othere query like user asked you about old chat data. see you have to give link when generating some answer for user.
 - Solve user's queries but if user still wants to talk to someone 
         * If user wants to contact sales then refer him to email sales@atc-gulf.com (used for sales teams). In this response don't give the link just the email
         * If user has registration queries contact@atc-gulf.com.  In this response don't give the link just the email

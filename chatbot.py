@@ -1,10 +1,17 @@
 import os
 import sys
 
-# Adding logging
 import logging
-logging.basicConfig(filename='app.logs', level=logging.DEBUG, 
-                    format='%(asctime)s %(levelname)s: %(message)s')
+# Configure logging once
+logging.basicConfig(
+    filename='app.logs',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s: %(message)s [in %(name)s]'
+)
+
+# Create a logger for this module
+logger = logging.getLogger(__name__)
+
 
 
 # Set the working directory paths
@@ -17,20 +24,27 @@ from langchain.schema import AIMessage, HumanMessage
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from services.langchain_service import chat_prompt, model
+
+# Vector Db Suppporting variables and functions 
+from utils.loading_streamlit import load_embeddings_and_index
+
+# for streamlit
 import streamlit as st
 
-# Cache the embeddings and FAISS index to load them only once
-@st.cache_resource
-def load_embeddings_and_index():
-    print("Loading FAISS...")
-    # Load embeddings
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/multi-qa-mpnet-base-dot-v1")
-    # Load FAISS index
-    faiss_index = FAISS.load_local("./vectorDB/faiss_index_improved", embeddings, allow_dangerous_deserialization=True)
-    return embeddings, faiss_index
+# For displaying the chat 
+from streamlit_dir.streamlit_support_functions import display_chat
 
-# Load embeddings and FAISS index
-embeddings, faiss_index = load_embeddings_and_index()
+
+
+
+
+
+
+
+# For loading embeddings
+from utils.loading_streamlit import load_embeddings_and_index
+embeddings, faiss_index = load_embeddings_and_index(HuggingFaceEmbeddings,FAISS)
+
 
 # Initialize Streamlit app
 st.title("Your Assistant")
@@ -65,14 +79,21 @@ if "messages" not in st.session_state:
     welcome_message = "Hi! This is Laila from ATCMarket. Glad to be at your service. How can I help you?"
     st.session_state.messages.append({"role": "assistant", "content": welcome_message})
 
-# Function to display chat messages in real-time
-def display_chat():
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
 
+
+
+# Chat Section
+ 
 # Display existing chat history on app rerun
 display_chat()
+
+
+
+
+
+
+
+# User Query Section
 
 # User query input
 if user_query := st.chat_input("Ask"):
@@ -89,7 +110,7 @@ if user_query := st.chat_input("Ask"):
     logging.info(f"USer query was: {user_query}")
     # Perform similarity search with FAISS
     results = faiss_index.similarity_search(user_query, k=5)
-    print("Result of similarity is: ",results)
+    logger.info("Result of similarity is: ",results)
     context = "\n".join([result.page_content for result in results])
     logging.info(f"Similarity search is: {context}")
 

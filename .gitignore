@@ -2,3 +2,8 @@
 /services/__pycache__
 .streamlit
 .env
+/vectorDB/__pycache__
+/streamlit_dir/__pycache__
+/utils/__pycache__
+
+/vectorDB/app.logs
