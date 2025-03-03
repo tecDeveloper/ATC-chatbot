@@ -1,86 +1,90 @@
+# ATC Market Assistant Chatbot
 
-# ATCMarket Chatbot
+A conversational AI assistant built with Streamlit and LangChain that helps customers with queries about ATC Market.
 
+## 🌟 Features
 
+- Interactive chat interface using Streamlit
+- Context-aware responses using LangChain
+- PDF document processing and retrieval
+- Vector-based semantic search using FAISS
+- Error handling and graceful fallbacks
 
+## 🛠️ Technologies Used
 
+- Python 3.x
+- Streamlit
+- LangChain
+- FAISS
+- Groq LLM
+- HuggingFace Embeddings
+- PyPDF2
 
+## ⚙️ Installation
 
-## Overview
+1. Clone the repository:
 
-The project uses FAISS to store vectors, langchain for llm conversation thus with every user query. We perform two steps.
-- Find similarity
-- Feed the similarity results and the user query to the llm (which in this case is llama 3.3 70B).
-
-
-
-
-## Deployment
-
-After cloning this project. 
-
-Follow the steps
-## Step 1
-- First make sure you have you data file. 
-- File should be in docx format.
-- The should contain data in question answer form.
-- Every question should start with "QUESTION:" and every answer should start with "ANSWER:"
-- Every Answer should have its reference link to the document from where it was made.
-
-### Example
-```Word
-QUESTION: Who is the contracting party under the ATCMarket Free Membership Agreement?
-ANSWER: The contracting party is ATCMARKET PORTAL with Company Registration No. 1452849. 
-ATCMarket may also delegate some aspects of the Service to its affiliates.
-IF you want to know more, check this link: 
-https://pub-2bae66d5e6d74bfda26d9e7d8ee03534.r2.dev/documents/ATCMarket%20Free%20Membership%20Agreement.pdf
-
-```
-
-## Step 2
-Then you have create a virtaul enviroment. For that:
-
+2. Create and activate a virtual environment:
 ```bash
-  python -m venv venv
+python -m venv venv
+# For Windows
+venv\Scripts\activate
+# For Unix/MacOS
+source venv/bin/activate
 ```
 
-
-## Step 3
-Then you have make you vector Database. 
-For that, if you have 'make' installed in you system you can simply run
-
+3. Install dependencies:
 ```bash
-  make updatedb
-```
-Otherwise follow the steps:
-- Activate virtual enviroment
-```bash
-  venv\Scripts\activate
-```
-- then cd into
-```bash
-  cd vectorDB
-```
-- Finally run:
-```bash
-  python make_faiss_db.py
+pip install -r requirements.txt
 ```
 
-
-## Step 4
-### How to Run the chatbot
-After the vector DB has been created. Check if you're in the root directory of the project. Then, if you have 'make' installed run:
-
-```bash
-  make run 
+4. Set up environment variables:
+Create a `.env` file in the root directory and add:
+```env
+GROQ_API_KEY=your_groq_api_key_here
 ```
-Otherwise follow the steps bellow:
 
-- Activate virtual enviroment
+## 🚀 Running the Application
+
+Using Make:
 ```bash
-  venv\Scripts\activate
+make run
 ```
-- Then run:
+
+Or manually:
 ```bash
-  streamlit run chatbot.py
+cd src
+streamlit run app.py
 ```
+
+To run without any warning: 
+```
+streamlit run app.py --server.fileWatcherType=none
+```
+
+## 📁 Project Structure
+
+```
+ATC-Chatbot/
+├── data/                   # PDF documents
+├── src/
+│   ├── langchain_services/
+│   │   ├── chain_builder.py
+│   │   ├── document_loader.py
+│   │   └── embeddings.py
+│   ├── utils/
+│   │   └── constants.py
+│   │   └── showsources.py
+│   ├── app.py             # Streamlit interface
+│   └── main.py            # CLI interface
+├── requirements.txt
+├── .env
+└── README.md
+```
+
+## 💡 Usage
+
+1. Place your PDF documents in the `data/` directory
+2. Start the application
+3. Access the web interface at `http://localhost:8501`
+4. Start chatting with the assistant!
